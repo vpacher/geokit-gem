@@ -366,6 +366,9 @@ module Geokit
       @success=false
       @precision='unknown'
       @full_address=nil
+      #added by vp
+      @timezone_name = h[:timezone_name]
+      @gmt_offset = h[:gmt_offset]
       super(h[:lat],h[:lng])
     end
 
