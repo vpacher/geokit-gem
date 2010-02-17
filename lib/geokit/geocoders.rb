@@ -552,6 +552,32 @@ module Geokit
       end
     end
 
+    # Provides geocoding bases on IP address, uses ipinfodb.com and provides timezone information
+    class IpInfo < Geocoder
+      private
+
+      def self.do_geocode(ip, options = {})
+        return GeoLoc.new unless /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})?$/.match(ip)
+        response = self.call_geocoder_service("http://ipinfodb.com/ip_query.php?ip=#{ip}&timezone=true")
+        return response.is_a?(Net::HTTPSuccess) ? parse_xml(response.body) : GeoLoc.new
+      rescue
+        logger.error "Caught an error during GeoPluginGeocoder geocoding call: "+$!
+        return GeoLoc.new
+      end
+      def self.parse_xml(xml)
+        xml = REXML::Document.new(xml)
+        geo = GeoLoc.new
+        geo.provider='IpInfodb'
+        geo.city = xml.elements['//City'].text
+        geo.state = xml.elements['//RegionName'].text
+        geo.country_code = xml.elements['//CountryCode'].text
+        geo.lat = xml.elements['//Latitude'].text.to_f
+        geo.lng = xml.elements['//Longitude'].text.to_f
+        geo.success = !!geo.city && !geo.city.empty?
+        return geo
+      end
+      
+    end
     # Provides geocoding based upon an IP address.  The underlying web service is a hostip.info
     # which sources their data through a combination of publicly available information as well
     # as community contributions.
