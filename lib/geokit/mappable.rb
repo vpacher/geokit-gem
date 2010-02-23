@@ -377,7 +377,9 @@ module Geokit
     def is_us?
       country_code == 'US'
     end
-    
+    def is_dst?
+      is_dst == 1
+    end
     def success?
       success == true
     end
