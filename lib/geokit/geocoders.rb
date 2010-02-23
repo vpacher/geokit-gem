@@ -573,6 +573,9 @@ module Geokit
         geo.country_code = xml.elements['//CountryCode'].text
         geo.lat = xml.elements['//Latitude'].text.to_f
         geo.lng = xml.elements['//Longitude'].text.to_f
+        geo.timezone_name = xml.elements['//TimezoneName'].text
+        geo.gmt_offset = xml.elements['//Gmtoffset'].text.to_i
+        geo.is_dst = xml.elements['//Isdst'].text.to_i
         geo.success = !!geo.city && !geo.city.empty?
         return geo
       end
